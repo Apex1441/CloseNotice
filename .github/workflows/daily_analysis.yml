@@ -15,6 +15,9 @@ concurrency:
   group: stock-analysis
   cancel-in-progress: false  # Queue runs instead of canceling
 
+permissions:
+  contents: write
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
