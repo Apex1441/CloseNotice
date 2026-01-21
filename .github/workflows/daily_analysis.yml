@@ -10,6 +10,10 @@ on:
   # Allow manual trigger for testing
   workflow_dispatch:
 
+  # Run automatically on push to main
+  push:
+    branches: [ main ]
+
 # CRITICAL: Prevent concurrent runs (race condition on CSV file)
 concurrency:
   group: stock-analysis
