@@ -6,7 +6,9 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = os.path.join(os.getcwd(), 'data')
+# Base directory relative to this file (src/utils/persistence.py)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(BASE_DIR, 'data')
 CONFIG_DIR = os.path.join(DATA_DIR, 'config')
 CACHE_DIR = os.path.join(DATA_DIR, 'cache')
 CONFIG_FILE = os.path.join(CONFIG_DIR, 'monitored_items.json')
