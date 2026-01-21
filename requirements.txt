@@ -15,3 +15,6 @@ tenacity>=8.2.3
 
 # Rate limiting decorators
 ratelimit>=2.2.1
+
+# HTML parsing for scraper
+lxml>=4.9.0
