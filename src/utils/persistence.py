@@ -13,13 +13,6 @@ CONFIG_DIR = os.path.join(DATA_DIR, 'config')
 CACHE_DIR = os.path.join(DATA_DIR, 'cache')
 CONFIG_FILE = os.path.join(CONFIG_DIR, 'monitored_items.json')
 
-# Path debugging (visible in GitHub Actions logs)
-print(f"DEBUG: BASE_DIR={BASE_DIR}")
-print(f"DEBUG: DATA_DIR={DATA_DIR}")
-print(f"DEBUG: CACHE_DIR={CACHE_DIR}")
-print(f"DEBUG: CONFIG_FILE={CONFIG_FILE}")
-print(f"DEBUG: CWD={os.getcwd()}")
-
 # Defaults if config doesn't exist
 DEFAULT_FUNDS = ["FNILX", "FZILX"]
 DEFAULT_STOCKS = ["UURAF"]
@@ -123,11 +116,8 @@ def load_holdings_cache(ticker: str) -> Optional[List[Dict[str, Any]]]:
     """Load holdings from cache if exists."""
     ticker = ticker.upper()
     file_path = os.path.join(CACHE_DIR, f"{ticker}_holdings.json")
-    print(f"DEBUG: Loading holdings cache for {ticker} from {file_path}")
     if not os.path.exists(file_path):
-        print(f"DEBUG: Cache file NOT FOUND at {file_path}")
         return None
-    print(f"DEBUG: Cache file FOUND at {file_path}")
         
     try:
         with open(file_path, 'r') as f:

@@ -10,10 +10,6 @@ on:
   # Allow manual trigger for testing
   workflow_dispatch:
 
-  # Run automatically on push to main
-  push:
-    branches: [ main ]
-
 # CRITICAL: Prevent concurrent runs (race condition on CSV file)
 concurrency:
   group: stock-analysis
@@ -51,6 +47,14 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python -m src.main
+
+      - name: Save analysis results
+        if: always()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/sentiment_history.csv
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update sentiment history [skip ci]" && git push)
 
       - name: Upload logs on failure
         if: failure()
