@@ -113,7 +113,6 @@ class TelegramClient:
             # Ticker header
             if ticker == "FNILX":
                 message += f"{emoji} FNILX (Fidelity ZERO Large Cap) | Score: {score}/10\n"
-                message += "Based on 50 holdings\n"
             else:
                 message += f"{emoji} {ticker} | Score: {score}/10 ({label})\n"
 
