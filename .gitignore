@@ -8,9 +8,10 @@ logs/
 *.log
 
 # Data and History
-data/sentiment_history.csv
-data/cache/
-data/config/
+# Data and History (Commented out to allow GitHub Actions to see seeded caches)
+# data/sentiment_history.csv
+# data/cache/
+# data/config/
 
 # Tool outputs
 etf_tools/*.csv

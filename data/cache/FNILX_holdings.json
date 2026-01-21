@@ -1,0 +1,156 @@
+{
+  "ticker": "FNILX",
+  "updated_at": "2026-01-21T03:17:28.178312",
+  "holdings": [
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corporation",
+      "sector": "Unknown",
+      "weightPercentage": 7.2
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 6.9
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft Corporation",
+      "sector": "Unknown",
+      "weightPercentage": 6.1
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon.com, Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 3.78
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 3.16
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 3.11
+    },
+    {
+      "ticker": "GOOG",
+      "name": "Alphabet Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 2.49
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms, Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 2.34
+    },
+    {
+      "ticker": "TSLA",
+      "name": "Tesla, Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 2.01
+    },
+    {
+      "ticker": "BRK.B",
+      "name": "Berkshire Hathaway Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 1.57
+    },
+    {
+      "ticker": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "sector": "Unknown",
+      "weightPercentage": 1.44
+    },
+    {
+      "ticker": "LLY",
+      "name": "Eli Lilly and Company",
+      "sector": "Unknown",
+      "weightPercentage": 1.43
+    },
+    {
+      "ticker": "V",
+      "name": "Visa Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.95
+    },
+    {
+      "ticker": "JNJ",
+      "name": "Johnson & Johnson",
+      "sector": "Unknown",
+      "weightPercentage": 0.83
+    },
+    {
+      "ticker": "XOM",
+      "name": "Exxon Mobil Corporation",
+      "sector": "Unknown",
+      "weightPercentage": 0.82
+    },
+    {
+      "ticker": "WMT",
+      "name": "Walmart Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.81
+    },
+    {
+      "ticker": "NFLX",
+      "name": "Netflix, Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.76
+    },
+    {
+      "ticker": "MA",
+      "name": "Mastercard Incorporated",
+      "sector": "Unknown",
+      "weightPercentage": 0.76
+    },
+    {
+      "ticker": "COST",
+      "name": "Costco Wholesale Corporation",
+      "sector": "Unknown",
+      "weightPercentage": 0.68
+    },
+    {
+      "ticker": "ABBV",
+      "name": "AbbVie Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.67
+    },
+    {
+      "ticker": "PLTR",
+      "name": "Palantir Technologies Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.64
+    },
+    {
+      "ticker": "BAC",
+      "name": "Bank of America Corporation",
+      "sector": "Unknown",
+      "weightPercentage": 0.61
+    },
+    {
+      "ticker": "HD",
+      "name": "The Home Depot, Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.59
+    },
+    {
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices, Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.59
+    },
+    {
+      "ticker": "nan",
+      "name": "E-mini S&P 500 Future Dec 25",
+      "sector": "Unknown",
+      "weightPercentage": 0.58
+    }
+  ]
+}

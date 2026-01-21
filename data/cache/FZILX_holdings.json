@@ -1,0 +1,156 @@
+{
+  "ticker": "FZILX",
+  "updated_at": "2026-01-21T03:17:26.551774",
+  "holdings": [
+    {
+      "ticker": "TPE: 2330",
+      "name": "Taiwan Semiconductor Manufacturing Company Limited",
+      "sector": "Unknown",
+      "weightPercentage": 3.17
+    },
+    {
+      "ticker": "nan",
+      "name": "Fidelity Cash Central Fund",
+      "sector": "Unknown",
+      "weightPercentage": 1.44
+    },
+    {
+      "ticker": "nan",
+      "name": "MSCI EAFE Index Future Dec 25",
+      "sector": "Unknown",
+      "weightPercentage": 1.4
+    },
+    {
+      "ticker": "HKG: 0700",
+      "name": "Tencent Holdings Limited",
+      "sector": "Unknown",
+      "weightPercentage": 1.38
+    },
+    {
+      "ticker": "AMS: ASML",
+      "name": "ASML Holding N.V.",
+      "sector": "Unknown",
+      "weightPercentage": 1.19
+    },
+    {
+      "ticker": "HKG: 9988",
+      "name": "Alibaba Group Holding Limited",
+      "sector": "Unknown",
+      "weightPercentage": 1.07
+    },
+    {
+      "ticker": "KRX: 005930",
+      "name": "Samsung Electronics Co., Ltd.",
+      "sector": "Unknown",
+      "weightPercentage": 0.97
+    },
+    {
+      "ticker": "LON: AZN",
+      "name": "AstraZeneca PLC",
+      "sector": "Unknown",
+      "weightPercentage": 0.82
+    },
+    {
+      "ticker": "SWX: ROG",
+      "name": "Roche Holding AG",
+      "sector": "Unknown",
+      "weightPercentage": 0.77
+    },
+    {
+      "ticker": "SWX: NESN",
+      "name": "Nestl\u00c3\u00a9 S.A.",
+      "sector": "Unknown",
+      "weightPercentage": 0.73
+    },
+    {
+      "ticker": "SWX: NOVN",
+      "name": "Novartis AG",
+      "sector": "Unknown",
+      "weightPercentage": 0.71
+    },
+    {
+      "ticker": "nan",
+      "name": "MSCI Emerging Markets Index Future Dec 25",
+      "sector": "Unknown",
+      "weightPercentage": 0.71
+    },
+    {
+      "ticker": "ETR: SAP",
+      "name": "SAP SE",
+      "sector": "Unknown",
+      "weightPercentage": 0.7
+    },
+    {
+      "ticker": "LON: HSBA",
+      "name": "HSBC Holdings plc",
+      "sector": "Unknown",
+      "weightPercentage": 0.7
+    },
+    {
+      "ticker": "TYO: 7203",
+      "name": "Toyota Motor Corporation",
+      "sector": "Unknown",
+      "weightPercentage": 0.68
+    },
+    {
+      "ticker": "TSX: RY",
+      "name": "Royal Bank of Canada",
+      "sector": "Unknown",
+      "weightPercentage": 0.62
+    },
+    {
+      "ticker": "LON: SHEL",
+      "name": "Shell plc",
+      "sector": "Unknown",
+      "weightPercentage": 0.61
+    },
+    {
+      "ticker": "KRX: 000660",
+      "name": "SK hynix Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.57
+    },
+    {
+      "ticker": "ETR: SIE",
+      "name": "Siemens Aktiengesellschaft",
+      "sector": "Unknown",
+      "weightPercentage": 0.56
+    },
+    {
+      "ticker": "SHOP",
+      "name": "Shopify Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.55
+    },
+    {
+      "ticker": "TYO: 8306",
+      "name": "Mitsubishi UFJ Financial Group, Inc.",
+      "sector": "Unknown",
+      "weightPercentage": 0.54
+    },
+    {
+      "ticker": "EPA: MC",
+      "name": "LVMH Mo\u00c3\u00abt Hennessy - Louis Vuitton, Soci\u00c3\u00a9t\u00c3\u00a9 Europ\u00c3\u00a9enne",
+      "sector": "Unknown",
+      "weightPercentage": 0.54
+    },
+    {
+      "ticker": "TYO: 6758",
+      "name": "Sony Group Corporation",
+      "sector": "Unknown",
+      "weightPercentage": 0.51
+    },
+    {
+      "ticker": "ASX: CBA",
+      "name": "Commonwealth Bank of Australia",
+      "sector": "Unknown",
+      "weightPercentage": 0.48
+    },
+    {
+      "ticker": "ETR: ALV",
+      "name": "Allianz SE",
+      "sector": "Unknown",
+      "weightPercentage": 0.48
+    }
+  ]
+}
