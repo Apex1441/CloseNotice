@@ -1,0 +1,17 @@
+# HTTP client for APIs
+requests>=2.31.0
+
+# Official Groq SDK
+groq>=0.4.2
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# CSV operations and data manipulation (use latest compatible version)
+pandas>=2.2.0
+
+# Retry logic with exponential backoff
+tenacity>=8.2.3
+
+# Rate limiting decorators
+ratelimit>=2.2.1
