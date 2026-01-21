@@ -94,9 +94,16 @@ class SentimentLogger:
             df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
             # Save back to CSV
+            # Dedup: Convert timestamp to date and keep latest entry for each ticker/day
+            df['temp_date'] = pd.to_datetime(df['timestamp']).dt.date
+            df = df.sort_values('timestamp').drop_duplicates(
+                subset=['ticker', 'temp_date'], 
+                keep='last'
+            ).drop(columns=['temp_date'])
+
             df.to_csv(self.csv_path, index=False)
 
-            logger.info(f"Logged sentiment for {ticker}: Score {sentiment_score}/10")
+            logger.info(f"Logged sentiment for {ticker}: Score {sentiment_score}/10 (Deduplicated)")
 
         except Exception as e:
             logger.error(f"Failed to append sentiment to CSV: {e}")
