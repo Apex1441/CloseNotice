@@ -111,9 +111,9 @@ class TelegramClient:
             label = get_sentiment_label(score)
 
             # Ticker header
-            if ticker == "FNILX":
-                message += f"{emoji} FNILX (Fidelity ZERO Large Cap) | Score: {score}/10\n"
-            else:
+            
+            
+            if :
                 message += f"{emoji} {ticker} | Score: {score}/10 ({label})\n"
 
             # Insights (bullet points)
