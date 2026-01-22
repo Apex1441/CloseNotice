@@ -10,8 +10,35 @@ Provides structured logging for the entire application with:
 
 import logging
 import sys
+import re
 from pathlib import Path
 from src.config.settings import Settings
+
+class SecretMasker(logging.Filter):
+    """Filter to mask potential API keys and secrets in logs."""
+    
+    # Patterns for common API keys (long alphanumeric strings)
+    # 1. Finnhub/Groq style: Alphanumeric characters, 20-60 chars
+    # 2. General patterns to catch common keys
+    SECRET_PATTERNS = [
+        re.compile(r'gsk_[a-zA-Z0-9]{30,60}'),  # Groq keys
+        re.compile(r'\b[a-zA-Z0-9]{20,50}\b'),   # General long alphanumeric
+    ]
+
+    def filter(self, record):
+        if not isinstance(record.msg, str):
+            return True
+            
+        message = record.msg
+        
+        # Check against patterns
+        # Note: Be careful not to mask common words or IDs
+        # We only mask if it looks like an API key being passed in parameters
+        for pattern in self.SECRET_PATTERNS:
+            message = pattern.sub('[MASKED]', message)
+            
+        record.msg = message
+        return True
 
 
 def setup_logger(name: str = __name__, level: str = None) -> logging.Logger:
@@ -54,6 +81,13 @@ def setup_logger(name: str = __name__, level: str = None) -> logging.Logger:
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(getattr(logging, log_level.upper()))
     console_handler.setFormatter(formatter)
+    
+    # Add masker filter to both handlers
+    masker = SecretMasker()
+    if 'file_handler' in locals():
+        file_handler.addFilter(masker)
+    console_handler.addFilter(masker)
+    
     logger.addHandler(console_handler)
 
     # Prevent propagation to root logger

@@ -22,6 +22,7 @@ from tenacity import (
 
 from src.config.settings import Settings
 from src.config.tickers import get_company_name, get_sector
+from src.config.validators import is_valid_ticker
 from src.utils.logger import setup_logger, log_api_call
 from src.utils.error_handler import APIAuthenticationError, ErrorContext
 
@@ -82,7 +83,11 @@ class FinnhubClient:
         Raises:
             RateLimitError: If rate limit hit (will trigger retry)
             APIAuthenticationError: If authentication fails
+            ValueError: If ticker format is invalid
         """
+        if not is_valid_ticker(ticker):
+            raise ValueError(f"Invalid ticker format: {ticker}")
+
         url = f"{self.base_url}/company-news"
         params = {
             'symbol': ticker,

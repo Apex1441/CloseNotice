@@ -134,6 +134,40 @@ class GroqClient:
         logger.error(f"No JSON found in response: {response_text[:200]}")
         raise ValueError("No valid JSON found in LLM response")
 
+    def _validate_result(self, result: dict) -> dict:
+        """
+        Validate LLM response structure and data types.
+        """
+        # 1. Field presence
+        required_fields = ['ticker', 'sentiment_score', 'top_insights', 'rationale']
+        missing = [f for f in required_fields if f not in result]
+        if missing:
+            raise ValueError(f"Missing required fields: {missing}")
+
+        # 2. Sentiment Score (integer 1-10)
+        try:
+            score = int(result['sentiment_score'])
+            if not 1 <= score <= 10:
+                raise ValueError(f"Score out of range: {score}")
+            result['sentiment_score'] = score
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid sentiment_score: {result.get('sentiment_score')}")
+
+        # 3. Top Insights (non-empty list, 2-3 items)
+        insights = result.get('top_insights', [])
+        if not isinstance(insights, list) or len(insights) == 0:
+            raise ValueError("top_insights must be a non-empty list")
+        if len(insights) < 2:
+            logger.warning(f"LLM returned only {len(insights)} insights")
+        result['top_insights'] = insights[:3]  # Enforce max 3 items
+
+        # 4. Rationale (string, min 20 chars)
+        rationale = result.get('rationale', '')
+        if not isinstance(rationale, str) or len(rationale) < 20:
+            raise ValueError("Rationale too short or not a string")
+
+        return result
+
     def analyze_aggregate_sentiment(
         self,
         fund_name: str,
@@ -179,7 +213,9 @@ class GroqClient:
 
         # Calculate active ticker count
         active_count = len(ticker_news_dict)
-        total_holdings = 50
+        # Dynamic holdings count from get_fund_holdings()
+        from src.config.tickers import get_fund_holdings
+        total_holdings = len(get_fund_holdings(fund_name)) or 50
 
         logger.debug(f"Prepared {len(all_articles)} articles from {active_count} tickers")
 
@@ -201,11 +237,8 @@ class GroqClient:
                 logger.warning(f"LLM returned 'Insufficient Data' for {fund_name}")
                 raise InsufficientDataError(f"Insufficient news data for {fund_name} analysis")
 
-            # Validate required fields
-            required_fields = ['ticker', 'sentiment_score', 'top_insights', 'rationale']
-            missing = [f for f in required_fields if f not in result]
-            if missing:
-                raise ValueError(f"Missing required fields in LLM response: {missing}")
+            # Validate result schema and values
+            result = self._validate_result(result)
             
             logger.info(f"✓ {fund_name} analysis complete: Score {result['sentiment_score']}/10")
 
@@ -264,11 +297,8 @@ class GroqClient:
                 logger.warning(f"LLM returned 'Insufficient Data' for {ticker}")
                 raise InsufficientDataError(f"Insufficient news data for {ticker} analysis")
 
-            # Validate required fields
-            required_fields = ['ticker', 'sentiment_score', 'top_insights', 'rationale']
-            missing = [f for f in required_fields if f not in result]
-            if missing:
-                raise ValueError(f"Missing required fields in LLM response: {missing}")
+            # Validate result schema and values
+            result = self._validate_result(result)
 
             logger.info(f"✓ {ticker} analysis complete: Score {result['sentiment_score']}/10")
 

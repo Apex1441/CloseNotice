@@ -27,6 +27,7 @@ from src.config.tickers import (
     update_fund_holdings_from_scraper,
     get_holdings_summary
 )
+from src.config.validators import is_valid_ticker
 from src.data.finnhub_client import FinnhubClient
 # from src.data.fmp_client import FmpClient
 from src.data.holdings_scraper import HoldingsScraper
@@ -146,8 +147,8 @@ class StockAnalysisPipeline:
         force_refresh = "--refresh" in sys.argv
         
         # Simple CLI parsing for extra funds: python src/main.py SPY QQQ
-        # This is a basic way to inject them.
-        extra_funds = [arg.upper() for arg in sys.argv[1:] if not arg.startswith('-')]
+        # Only add if valid format
+        extra_funds = [arg.upper() for arg in sys.argv[1:] if not arg.startswith('-') and is_valid_ticker(arg)]
         
         # Start with default funds from tickers.py
         from src.config.tickers import get_all_funds, get_fund_holdings
