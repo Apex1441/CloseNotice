@@ -113,7 +113,7 @@ class TelegramClient:
             # Ticker header
             
             
-            if :
+            if ticker and score:
                 message += f"{emoji} {ticker} | Score: {score}/10 ({label})\n"
 
             # Insights (bullet points)
