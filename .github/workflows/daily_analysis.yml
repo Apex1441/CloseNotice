@@ -68,7 +68,8 @@ jobs:
           git add data/sentiment_history.csv
           if ! git diff --quiet || ! git diff --staged --quiet; then
             git commit -m "Update sentiment history [skip ci]"
-            git pull --rebase origin main
+            git fetch origin main
+            git merge origin/main --no-edit
             git push
           fi
 
