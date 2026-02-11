@@ -43,11 +43,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Debug test discovery
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          echo "=== Workspace contents ==="
+          ls -la
+          echo "=== Tests directory ==="
+          ls -la tests/
+          echo "=== Python path ==="
+          python -c "import sys; print('\n'.join(sys.path))"
+          echo "=== Test collection (verbose) ==="
+          pytest --collect-only -vvv || true
+          echo "=== Try importing src ==="
+          python -c "import src; print('src imported successfully')"
+
       - name: Run tests with coverage
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest --cov-report=xml
+          pytest --cov-report=xml -vvv
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.11'
