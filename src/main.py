@@ -2,10 +2,10 @@
 Main orchestration script for Stock News Analysis System.
 
 Pipeline Flow:
-1. Fetch news for all 92 tickers (FNILX 51 + FZILX 40 + UURAF 1)
+1. Fetch news for all tracked tickers (funds + individual stocks, see data/config/monitored_items.json)
 2. Check for market quiet scenario (weekends/holidays)
-3. Aggregate FNILX holdings news + FZILX holdings news vs UURAF individual
-4. Analyze with Groq LLM (3 API calls: FNILX aggregate + FZILX aggregate + UURAF)
+3. Aggregate each fund's holdings news; individual stocks analyzed separately
+4. Analyze with Groq LLM (one call per fund + one per individual stock)
 5. Log results to CSV
 6. Send Telegram report
 7. Handle errors gracefully
@@ -19,11 +19,6 @@ from typing import List, Dict
 from src.config.settings import Settings
 from src.config.tickers import (
     ALL_TICKERS,
-    FNILX_TOP50_WITH_SECTORS,
-    FZILX_TOP40_WITH_SECTORS,
-    INDIVIDUAL_TICKERS_WITH_SECTORS,
-    get_fnilx_tickers,
-    get_fzilx_tickers,
     update_fund_holdings_from_scraper,
     get_holdings_summary
 )
@@ -80,8 +75,9 @@ class StockAnalysisPipeline:
             self._fetch_fund_holdings()
             summary = get_holdings_summary()
             logger.info(f"✓ Holdings loaded")
-            logger.info(f"  - FNILX holdings: {summary['fnilx_count']}")
-            logger.info(f"  - FZILX holdings: {summary['fzilx_count']}")
+            for key, count in summary.items():
+                if key not in ('individual_count', 'total_count'):
+                    logger.info(f"  - {key.replace('_count', '').upper()} holdings: {count}")
             logger.info(f"  - Individual stocks: {summary['individual_count']}")
             logger.info(f"  - Total tickers: {summary['total_count']}")
 
@@ -99,9 +95,23 @@ class StockAnalysisPipeline:
                 logger.info("✓ Market quiet notification sent")
                 return True
 
-            # Step 5: Analyze sentiment (3 LLM calls: FNILX + FZILX + UURAF)
+            # Step 5: Analyze sentiment (one LLM call per fund/stock with news)
             logger.info("\n[Step 4/7] Analyzing sentiment with Groq LLM...")
             results, errors, no_news_tickers = self._analyze_sentiment(news_data)
+
+            # Alert immediately on any *real* analysis failure, even if other
+            # targets succeeded - a partial failure must never be silent
+            # (previously it was only visible buried in the Telegram report's
+            # error section). InsufficientDataError is excluded: it just means
+            # a ticker had too little news that day, which is expected and not
+            # worth a critical alert or a failed CI run.
+            real_errors = [e for e in errors if e['type'] != 'InsufficientDataError']
+            if real_errors:
+                send_critical_alert(
+                    error_type="Partial Analysis Failure",
+                    error_message=f"{len(real_errors)} of {len(results) + len(errors)} analyses failed",
+                    additional_info="\n".join(f"- {e['ticker']}: {e['error']}" for e in real_errors)
+                )
 
             # Step 6: Log results to CSV
             logger.info("\n[Step 5/7] Logging results to CSV...")
@@ -113,13 +123,14 @@ class StockAnalysisPipeline:
             self._send_report(results, total_articles, errors, runtime, no_news_tickers)
 
             # Summary
+            expected = len(results) + len(errors)
             logger.info("\n[Step 7/7] Pipeline complete")
-            logger.info(f"✓ Analyses completed: {len(results)}/2")
+            logger.info(f"✓ Analyses completed: {len(results)}/{expected}")
             logger.info(f"✓ Errors: {len(errors)}")
             logger.info(f"✓ Total runtime: {runtime:.1f}s")
             logger.info("=" * 80)
 
-            return len(results) > 0
+            return len(results) > 0 and not real_errors
 
         except APIAuthenticationError as e:
             logger.critical(f"Authentication failure: {e}")

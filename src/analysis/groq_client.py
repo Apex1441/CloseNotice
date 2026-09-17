@@ -12,8 +12,20 @@ Features:
 import re
 import json
 from typing import Dict, List
-from groq import Groq
-from tenacity import retry, stop_after_attempt, wait_exponential
+from groq import (
+    Groq,
+    APIConnectionError,
+    APITimeoutError,
+    RateLimitError,
+    InternalServerError,
+)
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+
+# Only retry on errors that are plausibly transient. Auth failures, bad
+# requests, and other 4xx errors will never succeed on retry, so failing
+# fast for those surfaces the real problem instead of wasting ~15s (3
+# attempts x exponential backoff) retrying something that can't recover.
+_RETRYABLE_GROQ_ERRORS = (APIConnectionError, APITimeoutError, RateLimitError, InternalServerError)
 
 from src.config.settings import Settings
 from src.config.tickers import get_sector, MAGNIFICENT_7
@@ -22,7 +34,7 @@ from src.analysis.prompts import (
     format_individual_prompt
 )
 from src.utils.logger import setup_logger, log_api_call
-from src.utils.error_handler import InsufficientDataError
+from src.utils.error_handler import InsufficientDataError, APIAuthenticationError
 
 logger = setup_logger(__name__)
 
@@ -38,12 +50,15 @@ class GroqClient:
             api_key: Groq API key (defaults to Settings.GROQ_API_KEY)
         """
         self.api_key = api_key or Settings.GROQ_API_KEY
+        if not self.api_key:
+            raise APIAuthenticationError("Groq API key not configured (GROQ_API_KEY)")
         self.client = Groq(api_key=self.api_key)
         self.model = Settings.GROQ_MODEL
         self.temperature = Settings.GROQ_TEMPERATURE
         self.max_tokens = Settings.GROQ_MAX_TOKENS
 
     @retry(
+        retry=retry_if_exception_type(_RETRYABLE_GROQ_ERRORS),
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10)
     )
