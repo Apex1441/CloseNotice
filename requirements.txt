@@ -1,3 +1,8 @@
+# Pinned explicitly (not a declared app dependency, but bundled with every
+# fresh venv/pip install at whatever version happened to ship that day).
+# PYSEC-2026-3447 was fixed in 83.0.0 - this is what pip-audit was flagging.
+setuptools>=83.0.0
+
 # HTTP client for APIs
 requests>=2.31.0,<3.0.0
 
