@@ -7,7 +7,7 @@ Tracked funds/stocks are configurable at runtime (see [Updating Holdings](#updat
 ## Features
 
 - **Automated News Aggregation**: Fetches news from Finnhub API for each tracked fund's holdings
-- **AI-Powered Analysis**: Uses Groq LLM (Llama 3.1) for sentiment analysis
+- **AI-Powered Analysis**: Uses Groq LLM (default: `openai/gpt-oss-120b`, configurable via `GROQ_MODEL`) for sentiment analysis
 - **Fund-Level Insights**: Aggregates a fund's holdings into a single fund-level sentiment score
 - **Individual Stock Tracking**: Optional separate analysis for individual stocks with sector-specific focus
 - **Daily Telegram Reports**: Formatted reports delivered at 5 PM EST
@@ -84,7 +84,7 @@ TELEGRAM_CHAT_ID=your_telegram_chat_id_here
 1. Sign up at https://console.groq.com
 2. Navigate to API Keys section
 3. Create new key
-4. Free tier: Generous limits for Llama 3.1 model
+4. Generous rate limits on the default model (see https://console.groq.com/docs/models for current models/pricing - availability changes over time)
 
 **Telegram Bot:**
 1. Open Telegram and search for [@BotFather](https://t.me/botfather)
@@ -224,7 +224,7 @@ DEFAULT_LOOKBACK_HOURS=24       # Normal lookback period
 WEEKEND_LOOKBACK_HOURS=72       # Weekend lookback period
 
 # LLM configuration
-GROQ_MODEL=llama-3.1-8b-instant # Model to use
+GROQ_MODEL=openai/gpt-oss-120b  # Model to use (see console.groq.com/docs/models)
 GROQ_TEMPERATURE=0.3            # Temperature (0-1)
 MAX_SUMMARY_LENGTH=200          # Chars to truncate summaries
 ```
