@@ -14,8 +14,8 @@ CACHE_DIR = os.path.join(DATA_DIR, 'cache')
 CONFIG_FILE = os.path.join(CONFIG_DIR, 'monitored_items.json')
 
 # Defaults if config doesn't exist
-DEFAULT_FUNDS = ["FNILX", "FZILX"]
-DEFAULT_STOCKS = ["UURAF"]
+DEFAULT_FUNDS = ["FZROX"]
+DEFAULT_STOCKS = []
 
 def ensure_dirs():
     """Ensure data directories exist."""

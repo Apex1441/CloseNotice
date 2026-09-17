@@ -1,13 +1,15 @@
 # Stock News Analysis System
 
-Automated system that analyzes news for FNILX (Fidelity ZERO Large Cap Index Fund) by aggregating news from its top 50 holdings, plus individual analysis for UURAF. Generates AI-powered sentiment summaries and delivers daily reports via Telegram at 5:00 PM EST using GitHub Actions.
+Automated system that analyzes news for FZROX (Fidelity ZERO Total Market Index Fund) by aggregating news from its top holdings. Generates AI-powered sentiment summaries and delivers daily reports via Telegram at 5:00 PM EST using GitHub Actions.
+
+Tracked funds/stocks are configurable at runtime (see [Updating Holdings](#updating-holdings)) — they are not hardcoded, so the fund(s) described here reflect the current default configuration in `data/config/monitored_items.json`, not a fixed feature of the code.
 
 ## Features
 
-- **Automated News Aggregation**: Fetches news from Finnhub API for 51 tickers (FNILX top 50 + UURAF)
+- **Automated News Aggregation**: Fetches news from Finnhub API for each tracked fund's holdings
 - **AI-Powered Analysis**: Uses Groq LLM (Llama 3.1) for sentiment analysis
-- **Fund-Level Insights**: Aggregates all FNILX holdings into single fund-level sentiment
-- **Individual Stock Tracking**: Separate analysis for UURAF with sector-specific focus
+- **Fund-Level Insights**: Aggregates a fund's holdings into a single fund-level sentiment score
+- **Individual Stock Tracking**: Optional separate analysis for individual stocks with sector-specific focus
 - **Daily Telegram Reports**: Formatted reports delivered at 5 PM EST
 - **Historical Tracking**: CSV logging for sentiment trend analysis
 - **Production-Ready**: Robust error handling, rate limiting, and monitoring
@@ -15,9 +17,9 @@ Automated system that analyzes news for FNILX (Fidelity ZERO Large Cap Index Fun
 ## System Architecture
 
 **Pipeline Flow:**
-1. **Ingestion**: Finnhub API fetches news for 51 tickers
-2. **Aggregation**: Combines all FNILX holdings news into single dataset
-3. **Analysis**: Groq LLM generates two sentiment analyses (FNILX aggregate + UURAF individual)
+1. **Ingestion**: Finnhub API fetches news for every tracked fund's holdings + individual stocks
+2. **Aggregation**: Combines each fund's holdings news into a single dataset per fund
+3. **Analysis**: Groq LLM generates one sentiment analysis per fund + one per individual stock
 4. **Storage**: Logs results to CSV for trend tracking
 5. **Delivery**: Sends formatted summary to Telegram
 
@@ -102,8 +104,8 @@ python -m src.main
 ```
 
 This will:
-- Fetch news for all 51 tickers
-- Analyze sentiment for FNILX and UURAF
+- Fetch news for all tracked tickers (see `data/config/monitored_items.json`)
+- Analyze sentiment for each tracked fund/stock
 - Send report to Telegram
 - Log results to `data/sentiment_history.csv`
 
@@ -155,7 +157,7 @@ CloseNotice/
 │   ├── main.py                      # Orchestration entry point
 │   ├── config/
 │   │   ├── settings.py              # Environment variables & config
-│   │   └── tickers.py               # FNILX top 50 + UURAF watchlist
+│   │   └── tickers.py               # Loads tracked funds/stocks from data/config
 │   ├── data/
 │   │   └── finnhub_client.py        # News fetching with rate limiting
 │   ├── analysis/
@@ -180,32 +182,32 @@ CloseNotice/
 
 ## Configuration
 
-### Updating FNILX Holdings
+### Which funds/stocks are tracked
 
-The top 50 FNILX holdings are configured in `src/config/tickers.py`.
+Tracked funds and individual stocks are **not** hardcoded in `tickers.py` — they're loaded at runtime from `data/config/monitored_items.json` (managed via `src/utils/persistence.py`). `src/config/tickers.py` just reads whatever that file lists and populates holdings from `data/cache/<FUND>_holdings.json`.
 
-**When to update:**
-- Quarterly fund rebalancing
-- Significant portfolio changes
-- New ticker replacements
+**To add/remove a tracked fund or stock**, use the CLI:
 
-**How to update:**
-1. Visit [FNILX Holdings](https://fundresearch.fidelity.com/mutual-funds/composition/315911750)
-2. Update `FNILX_TOP50_WITH_SECTORS` dict in `src/config/tickers.py`
-3. Include sector tags (e.g., `"NVDA": "Tech/AI"`)
-4. Update `TICKER_METADATA` with company names
-
-### Adding Individual Stocks
-
-To track additional stocks separately (like UURAF):
-
-```python
-# In src/config/tickers.py
-INDIVIDUAL_TICKERS_WITH_SECTORS = {
-    "UURAF": "Energy/Uranium",
-    "NEWSTOCK": "Tech/Software"  # Add new stocks here
-}
+```bash
+python manage_items.py list                  # show current funds/stocks
+python manage_items.py add fund FZROX        # track a new fund
+python manage_items.py add stock AAPL        # track an individual stock
+python manage_items.py remove FZROX          # stop tracking
 ```
+
+**Updating a fund's holdings:**
+- By default, `src/main.py` fetches current holdings for each tracked fund via `HoldingsScraper` (`src/data/holdings_scraper.py`) and caches them to `data/cache/<FUND>_holdings.json`. Cached holdings are reused unless you run with `--refresh`.
+- To seed/override holdings manually (e.g. pasted from a fund's official holdings page), write directly to `data/cache/<FUND>_holdings.json` in this format:
+  ```json
+  {
+    "ticker": "FZROX",
+    "updated_at": "2026-09-17T00:00:00.000000",
+    "holdings": [
+      {"ticker": "NVDA", "name": "NVIDIA Corp", "sector": "Technology", "weightPercentage": 6.71}
+    ]
+  }
+  ```
+- Run `python -m src.main --refresh` to force a live re-scrape instead of using the cache.
 
 ### Adjusting Settings
 
@@ -249,14 +251,14 @@ from src.storage.csv_logger import SentimentLogger
 
 logger = SentimentLogger()
 
-# Get FNILX trend over 30 days
-trend = logger.get_sentiment_trend("FNILX", days=30)
+# Get FZROX trend over 30 days
+trend = logger.get_sentiment_trend("FZROX", days=30)
 print(f"Average sentiment: {trend['mean']:.1f}/10")
 print(f"Trend: {'↑' if trend['trend'] > 0 else '↓'}")
 
 # Get latest sentiment
-latest = logger.get_latest_sentiment("UURAF")
-print(f"Latest UURAF sentiment: {latest['sentiment_score']}/10")
+latest = logger.get_latest_sentiment("FZROX")
+print(f"Latest FZROX sentiment: {latest['sentiment_score']}/10")
 ```
 
 ## Troubleshooting
@@ -313,15 +315,15 @@ print(f"Latest UURAF sentiment: {latest['sentiment_score']}/10")
 
 ## Performance Metrics
 
-**Typical Run:**
-- News fetching: ~56 seconds (51 tickers × 1.1s delay)
-- LLM analysis: ~10-15 seconds (2 API calls)
+**Typical Run** (scales with number of tracked tickers, currently 25 for FZROX):
+- News fetching: ~(ticker count × `API_CALL_DELAY` seconds), e.g. ~28s for 25 tickers at the default 1.1s delay
+- LLM analysis: ~5-10 seconds (one call per tracked fund/stock)
 - CSV logging + Telegram: ~2 seconds
-- **Total runtime**: ~70-75 seconds
+- **Total runtime**: roughly 35-45 seconds for the current FZROX-only configuration
 
 **API Usage:**
-- Finnhub: 51 calls/day (well within 1000/day free tier)
-- Groq: 2 calls/day (minimal usage, free tier sufficient)
+- Finnhub: 1 call per tracked ticker per day (well within the 1000/day free tier for any reasonable watchlist size)
+- Groq: 1 call per tracked fund/stock per day (minimal usage, free tier sufficient)
 - Telegram: 1-2 messages/day (unlimited free)
 
 **Cost**: $0/month (all free tier APIs)
@@ -339,9 +341,9 @@ import pandas as pd
 df = pd.read_csv('data/sentiment_history.csv')
 df['timestamp'] = pd.to_datetime(df['timestamp'])
 
-# Plot FNILX sentiment over time
-fnilx = df[df['ticker'] == 'FNILX']
-fnilx.plot(x='timestamp', y='sentiment_score', title='FNILX Sentiment Trend')
+# Plot FZROX sentiment over time
+fzrox = df[df['ticker'] == 'FZROX']
+fzrox.plot(x='timestamp', y='sentiment_score', title='FZROX Sentiment Trend')
 ```
 
 ### Custom Alerts
@@ -357,14 +359,11 @@ def check_sentiment_shift(current_score, historical_mean):
 
 ### Multi-Fund Support
 
-Extend to track multiple funds:
+Track multiple funds at once with the CLI (see [Configuration](#configuration)):
 
-```python
-# In src/config/tickers.py
-FUNDS = {
-    "FNILX": ["NVDA", "AAPL", ...],  # Large cap
-    "FZROX": ["AAPL", "MSFT", ...],  # Total market
-}
+```bash
+python manage_items.py add fund FNILX
+python manage_items.py add fund FZROX
 ```
 
 ## Contributing
@@ -383,7 +382,7 @@ MIT License - feel free to use and modify.
 
 - **Finnhub**: Stock news API
 - **Groq**: Fast LLM inference
-- **Fidelity**: FNILX fund data
+- **Fidelity**: Fund holdings data
 
 ## Support
 

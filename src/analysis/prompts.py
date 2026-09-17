@@ -9,7 +9,7 @@ Provides structured prompts with:
 """
 
 # ============================================================================
-# Aggregate Analysis Prompt (FNILX Fund-Level)
+# Aggregate Analysis Prompt (Fund-Level)
 # ============================================================================
 
 AGGREGATE_PROMPT = """You are a Senior Portfolio Manager at a top-tier hedge fund. Provide a high-conviction analysis of {fund_name}.
