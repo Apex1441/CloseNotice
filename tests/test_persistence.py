@@ -36,8 +36,8 @@ def test_load_monitored_items_default(temp_data_dir):
 
     assert 'funds' in items
     assert 'stocks' in items
-    assert 'FNILX' in items['funds']
-    assert 'UURAF' in items['stocks']
+    assert 'FZROX' in items['funds']
+    assert items['stocks'] == []
 
 
 def test_save_and_load_monitored_items(temp_data_dir):
