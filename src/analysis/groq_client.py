@@ -27,6 +27,37 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_ex
 # attempts x exponential backoff) retrying something that can't recover.
 _RETRYABLE_GROQ_ERRORS = (APIConnectionError, APITimeoutError, RateLimitError, InternalServerError)
 
+# Models Groq supports for Structured Outputs "strict" mode (constrained
+# decoding - the API guarantees schema-conformant JSON, so the model can
+# never produce the malformed output that free-form prompting occasionally
+# does). See https://console.groq.com/docs/structured-outputs. Only applied
+# for models in this set; any other GROQ_MODEL falls back to the original
+# prompt-only approach so overriding the model can't start erroring on an
+# unsupported response_format.
+_STRICT_JSON_SCHEMA_MODELS = {"openai/gpt-oss-20b", "openai/gpt-oss-120b"}
+
+_SENTIMENT_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {
+        "name": "sentiment_analysis",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "ticker": {"type": "string"},
+                "sentiment_score": {"type": "integer"},
+                "top_insights": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                },
+                "rationale": {"type": "string"}
+            },
+            "required": ["ticker", "sentiment_score", "top_insights", "rationale"],
+            "additionalProperties": False
+        }
+    }
+}
+
 from src.config.settings import Settings
 from src.config.tickers import get_sector, MAGNIFICENT_7
 from src.analysis.prompts import (
@@ -76,7 +107,7 @@ class GroqClient:
             Exception: If all retries fail
         """
         try:
-            response = self.client.chat.completions.create(
+            kwargs = dict(
                 model=self.model,
                 messages=[
                     {
@@ -91,6 +122,10 @@ class GroqClient:
                 temperature=self.temperature,
                 max_tokens=self.max_tokens
             )
+            if self.model in _STRICT_JSON_SCHEMA_MODELS:
+                kwargs["response_format"] = _SENTIMENT_RESPONSE_FORMAT
+
+            response = self.client.chat.completions.create(**kwargs)
 
             response_text = response.choices[0].message.content
             log_api_call(logger, "Groq", f"{self.model}", "SUCCESS")
