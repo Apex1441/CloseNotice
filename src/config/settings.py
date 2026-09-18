@@ -35,7 +35,11 @@ class Settings:
     GROQ_API_KEY = os.getenv('GROQ_API_KEY')
     GROQ_MODEL = os.getenv('GROQ_MODEL', 'openai/gpt-oss-120b')
     GROQ_TEMPERATURE = float(os.getenv('GROQ_TEMPERATURE', '0.3'))
-    GROQ_MAX_TOKENS = int(os.getenv('GROQ_MAX_TOKENS', '1024'))
+    # Reasoning models (e.g. openai/gpt-oss-120b) spend part of this budget on
+    # hidden reasoning tokens before emitting the actual JSON answer; 1024 was
+    # tuned for a non-reasoning model (llama-3.1-8b-instant) and was too small
+    # here, causing empty completions that failed schema validation.
+    GROQ_MAX_TOKENS = int(os.getenv('GROQ_MAX_TOKENS', '4096'))
 
     # Telegram Bot
     TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')

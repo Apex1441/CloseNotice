@@ -124,6 +124,12 @@ class GroqClient:
             )
             if self.model in _STRICT_JSON_SCHEMA_MODELS:
                 kwargs["response_format"] = _SENTIMENT_RESPONSE_FORMAT
+                # This task is a straightforward classification, not a
+                # multi-step reasoning problem. Without this, the model
+                # spends an unpredictable share of max_tokens "thinking"
+                # before it ever emits the schema-constrained JSON, which is
+                # what caused empty completions to fail schema validation.
+                kwargs["reasoning_effort"] = "low"
 
             response = self.client.chat.completions.create(**kwargs)
 
